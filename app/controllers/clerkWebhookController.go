@@ -2,8 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	//"github.com/ci-dominguez/vale-backend/app/models"
-	//"github.com/ci-dominguez/vale-backend/app/queries"
 	"github.com/gofiber/fiber/v2"
 	"github.com/svix/svix-webhooks/go"
 	"log"
@@ -72,33 +70,4 @@ func HandleClerkWebhooks(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Webhook processed successfully",
 	})
-}
-
-func HandleUserCreated(data map[string]interface{}) {
-	userData, ok := data["data"].(map[string]interface{})
-	if !ok {
-		log.Println("Invalid user data format")
-		return
-	}
-
-	// Getting clerk user idn and email
-	clerkID, ok := userData["id"].(string)
-	if !ok {
-		log.Println("Clerk IDN not found or invalid")
-		return
-	}
-
-	emailAddresses, ok := userData["email_addresses"].([]interface{})
-	if !ok || len(emailAddresses) == 0 {
-		log.Println("Email address not found or empty")
-		return
-	}
-
-	email, ok := emailAddresses[0].(map[string]interface{})["email_address"].(string)
-	if !ok {
-		log.Println("Email address not found")
-		return
-	}
-
-	log.Printf("Clerk ID: %s Email: %s\n", clerkID, email)
 }
