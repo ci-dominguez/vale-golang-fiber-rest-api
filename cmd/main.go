@@ -1,47 +1,34 @@
 package main
 
 import (
-	"fmt"
-	"log"
-
+	"github.com/ci-dominguez/vale-backend/app/routes"
+	"github.com/ci-dominguez/vale-backend/database"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/joho/godotenv"
+	"log"
 )
 
-type Habit struct {
-	ID int `json:"id"`
-	User_ID string `json:"user_id"`
-	Name string `json:"name"`
-	Description string `json:"description"`
-	Created_at string `json:"created_at"`
-}
-
 func main() {
-	fmt.Println("Hello, Fiber-Go!")
+	// Env vars
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal("Error loading .env file:", err)
+	}
+
+	// Init db
+	database.InitDB()
+	database.MigrateDB()
+
 	app := fiber.New()
 
-	habits := []Habit{}
+	// Middleware
+	app.Use(logger.New())
+	app.Use(cors.New())
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.Status(200).JSON(fiber.Map{"msg":"hello world"})
-	})
-
-	//Create habit
-	app.Post("/api/habits", func(c *fiber.Ctx) error {
-		habit := &Habit{}
-
-		if err := c.BodyParser(habit); err != nil {
-			return err
-		}
-
-		if habit.Name == "" {
-			return c.Status(400).JSON(fiber.Map{"error":"Habit name is required!"})
-		}
-
-		habit.ID = len(habits) + 1
-		habits = append(habits, *habit)
-
-		return c.Status(201).JSON(habit)
-	})
+	// TO-DO: Register routes
+	routes.HabitRoutes(app)
 
 	log.Fatal(app.Listen(":4000"))
 }
