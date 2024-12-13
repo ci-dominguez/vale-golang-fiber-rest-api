@@ -17,6 +17,16 @@ func CreateHabit(c *fiber.Ctx) error {
 		})
 	}
 
+	// Get users id
+	userID := c.Locals("userId").(string)
+	userUUID, err := uuid.Parse(userID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to parse user UUID",
+		})
+	}
+
+	habit.UserID = userUUID
 	habit.HabitID = uuid.New()
 	habit.CreatedAt = time.Now()
 
