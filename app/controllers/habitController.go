@@ -37,3 +37,35 @@ func CreateHabit(c *fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusCreated).JSON(habit)
 }
+
+func GetHabits(c *fiber.Ctx) error {
+	userIDInterface := c.Locals("userId")
+	println("Retrieved User ID Interface (habitController):", userIDInterface)
+
+	userIDStr, ok := userIDInterface.(string)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to retrieve user ID as string",
+		})
+	}
+
+	println("Retrieved User ID String (habitController):", userIDStr)
+
+	userUUID, err := uuid.Parse(userIDStr)
+	if err != nil {
+		println("UUID Parse Error:", err.Error())
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to parse user UUID",
+		})
+	}
+
+	// Fetch habits for user
+	habits, err := queries.GetHabitsByUserID(userUUID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to get habits",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(habits)
+}

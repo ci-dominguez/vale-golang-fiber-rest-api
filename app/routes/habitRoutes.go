@@ -12,4 +12,5 @@ func HabitRoutes(app *fiber.App) {
 	api.Use(middleware.AuthMiddleware)
 
 	api.Post("/habits", controllers.CreateHabit)
+	api.Get("/habits", controllers.GetHabits)
 }
