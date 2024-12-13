@@ -11,21 +11,38 @@ import (
 func CreateHabit(c *fiber.Ctx) error {
 	var habit models.Habit
 
+	// Parse JSON into habit struct
 	if err := c.BodyParser(&habit); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Invalid request body",
 		})
 	}
 
+	println("Parsed Habit Name:", habit.Name)
+	println("Parsed Habit Description:", habit.Description)
+
 	// Get users id
-	userID := c.Locals("userId").(string)
-	userUUID, err := uuid.Parse(userID)
+	userIDInterface := c.Locals("userId")
+	println("Retrieved User ID Interface (habitController):", userIDInterface)
+
+	userIDStr, ok := userIDInterface.(string)
+	if !ok {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to retrieve user ID as string",
+		})
+	}
+
+	println("Retrieved User ID String (habitController):", userIDStr)
+
+	userUUID, err := uuid.Parse(userIDStr)
 	if err != nil {
+		println("UUID Parse Error:", err.Error())
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to parse user UUID",
 		})
 	}
 
+	// Create habit
 	habit.UserID = userUUID
 	habit.HabitID = uuid.New()
 	habit.CreatedAt = time.Now()
