@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/ci-dominguez/vale-backend/app/middleware"
 	"github.com/ci-dominguez/vale-backend/app/routes"
 	"github.com/ci-dominguez/vale-backend/database"
 	"github.com/gofiber/fiber/v2"
@@ -21,11 +22,17 @@ func main() {
 	database.InitDB()
 	database.MigrateDB()
 
+	// Init clerk client
+	middleware.Init()
+
 	app := fiber.New()
 
-	// Middleware
+	// Cors
 	app.Use(logger.New())
-	app.Use(cors.New())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "http://localhost:5173,https://vale.cidominguez.com",
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+	}))
 
 	// TO-DO: Register routes
 	routes.HabitRoutes(app)
