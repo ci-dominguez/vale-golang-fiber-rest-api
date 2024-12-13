@@ -52,6 +52,26 @@ func CreateHabit(c *fiber.Ctx) error {
 			"error": "Failed to create habit",
 		})
 	}
+
+	// Create a month worth of habitRecords for the habit
+	startDate := time.Now()
+	endDate := startDate.AddDate(0, 1, 0)
+
+	var habitRecords []models.HabitRecord
+	for d := startDate; d.Before(endDate); d = d.AddDate(0, 0, 1) {
+		habitRecords = append(habitRecords, models.HabitRecord{
+			HabitID:     habit.HabitID,
+			Date:        d,
+			IsCompleted: false,
+		})
+	}
+
+	if err := queries.CreateHabitRecords(habitRecords); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to create default habit records",
+		})
+	}
+
 	return c.Status(fiber.StatusCreated).JSON(habit)
 }
 
