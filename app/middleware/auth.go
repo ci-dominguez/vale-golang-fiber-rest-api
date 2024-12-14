@@ -8,6 +8,7 @@ import (
 	"github.com/clerk/clerk-sdk-go/v2/jwt"
 	"github.com/gofiber/fiber/v2"
 	"os"
+	"time"
 )
 
 func Init() {
@@ -24,7 +25,8 @@ func AuthMiddleware(c *fiber.Ctx) error {
 	println("Received Token (middleware):", token)
 
 	sessionClaims, err := jwt.Verify(context.Background(), &jwt.VerifyParams{
-		Token: token,
+		Token:  token,
+		Leeway: 5 * time.Second,
 	})
 	if err != nil {
 		println("JWT Verification Error:", err.Error())
