@@ -2,30 +2,18 @@ package controllers
 
 import (
 	"github.com/ci-dominguez/vale-backend/app/queries"
+	"github.com/ci-dominguez/vale-backend/app/utils"
 	"github.com/gofiber/fiber/v2"
-	"github.com/google/uuid"
 	"strings"
 	"time"
 )
 
 func GetHabitRecords(c *fiber.Ctx) error {
-	userIDInterface := c.Locals("userId")
-	println("Retrieved User ID Interface (habitRecordController):", userIDInterface)
-
-	userIDStr, ok := userIDInterface.(string)
-	if !ok {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to retrieve user ID as string",
-		})
-	}
-
-	println("Retrieved User ID String (habitRecordController):", userIDStr)
-
-	userUUID, err := uuid.Parse(userIDStr)
+	// Get users db id
+	userUUID, err := utils.GetUserUUID(c)
 	if err != nil {
-		println("UUID Parse Error:", err.Error())
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Failed to parse user UUID",
+		return c.Status(err.(*fiber.Error).Code).JSON(fiber.Map{
+			"error": err.Error(),
 		})
 	}
 
