@@ -36,6 +36,7 @@ func main() {
 
 	// TO-DO: Register routes
 	routes.HabitRoutes(app)
+	routes.HabitRecordRoutes(app)
 	routes.ClerkWebhookRoutes(app)
 
 	log.Fatal(app.Listen(":4000"))
