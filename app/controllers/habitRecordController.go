@@ -90,3 +90,60 @@ func GetHabitRecords(c *fiber.Ctx) error {
 
 	return c.JSON(habitRecords)
 }
+
+func UpdateHabitRecord(c *fiber.Ctx) error {
+
+	// Get users db id
+	userUUID, err := utils.GetUserUUID(c)
+	if err != nil {
+		return c.Status(err.(*fiber.Error).Code).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Validate query params
+	habitID := c.Query("habit")
+	recordDateParam := c.Query("date")
+
+	if habitID == "" || recordDateParam == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Missing required query param",
+		})
+	}
+
+	recordDate, err := time.Parse("2006-01-02", recordDateParam)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid record date format. Expected 'YYYY-MM-DD'",
+		})
+	}
+
+	println("Habit ID:", habitID)
+	println("Habit Record Date:", recordDate.String())
+
+	// Verify habit belongs to user making the request
+	isAuthorized, err := queries.VerifyHabitOwnership(habitID, userUUID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to verify habit ownership",
+		})
+	}
+
+	if !isAuthorized {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": "You are not authorized to access these habit records",
+		})
+	}
+
+	// Update habit record
+	updatedHabitRecord, err := queries.UpdateHabitRecord(habitID, recordDate)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to update habit record",
+		})
+	}
+
+	println("Updated Habit Record:", updatedHabitRecord)
+
+	return c.JSON(updatedHabitRecord)
+}
