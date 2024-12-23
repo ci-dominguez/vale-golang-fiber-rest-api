@@ -16,8 +16,21 @@ func CreateHabit(habit *models.Habit) error {
 func GetHabitsByUserID(userID uuid.UUID) ([]models.Habit, error) {
 	var habits []models.Habit
 
-	res := database.DB.Where("user_id = ?", userID).Find(&habits)
-	return habits, res.Error
+	result := database.DB.Where("user_id = ?", userID).Find(&habits)
+	return habits, result.Error
+}
+
+func DeleteHabit(habitID string) error {
+	// Convert HabitID string to UUID
+	habitUUID, err := uuid.Parse(habitID)
+	if err != nil {
+		return err
+	}
+
+	// Delete habit
+	result := database.DB.Where("habit_id = ?", habitUUID).Delete(&models.Habit{})
+
+	return result.Error
 }
 
 func VerifyHabitOwnership(habitID string, userUUID uuid.UUID) (bool, error) {

@@ -23,6 +23,19 @@ func GetHabitRecords(habitIDs []string, startDate time.Time, endDate time.Time) 
 	return habitRecords, err
 }
 
+func DeleteHabitRecords(habitID string) error {
+	// Convert habitID string to UUID
+	habitUUID, err := uuid.Parse(habitID)
+	if err != nil {
+		return err
+	}
+
+	// Delete habitRecords associated with habit
+	result := database.DB.Where("habit_id = ?", habitUUID).Delete(&models.HabitRecord{})
+
+	return result.Error
+}
+
 func UpdateHabitRecord(habitID string, recordDate time.Time) (*models.HabitRecord, error) {
 	var foundRecord models.HabitRecord
 

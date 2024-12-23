@@ -82,3 +82,58 @@ func GetHabits(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(habits)
 }
+
+func DeleteHabit(c *fiber.Ctx) error {
+	// Get users db id
+	userUUID, err := utils.GetUserUUID(c)
+	if err != nil {
+		return c.Status(err.(*fiber.Error).Code).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Validate query params
+	habitID := c.Query("habit")
+
+	if habitID == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Missing required query param",
+		})
+	}
+
+	println("Parsed Habit ID:", habitID)
+
+	// Verify habit belongs to user making the request
+	isAuthorized, err := queries.VerifyHabitOwnership(habitID, userUUID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to verify habit ownership",
+		})
+	}
+
+	if !isAuthorized {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": "You are not authorized to perform this action",
+		})
+	}
+
+	println("User is authorized to modify habit")
+
+	//Delete all habitRecords for habit
+	if err := queries.DeleteHabitRecords(habitID); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to delete habit records",
+		})
+	}
+
+	//Delete habit
+	if err := queries.DeleteHabit(habitID); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to delete habit",
+		})
+	}
+
+	println("Successfully deleted habit and all its records.")
+
+	return c.Status(fiber.StatusOK).JSON(habitID)
+}
