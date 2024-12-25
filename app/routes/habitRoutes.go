@@ -6,6 +6,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+// HabitRoutes registers routes for habit management.
+// Routes are protected by AuthMiddleware.
 func HabitRoutes(app *fiber.App) {
 	api := app.Group("/api")
 

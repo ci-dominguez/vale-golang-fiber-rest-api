@@ -6,13 +6,14 @@ import (
 	"github.com/google/uuid"
 )
 
-// CreateHabit inserts new habit into db
+// CreateHabit inserts new habit into the db.
 func CreateHabit(habit *models.Habit) error {
 	result := database.DB.Create(&habit)
 
 	return result.Error
 }
 
+// GetHabitsByUserID retrieves all habits associated with the user.
 func GetHabitsByUserID(userID uuid.UUID) ([]models.Habit, error) {
 	var habits []models.Habit
 
@@ -20,6 +21,7 @@ func GetHabitsByUserID(userID uuid.UUID) ([]models.Habit, error) {
 	return habits, result.Error
 }
 
+// DeleteHabit removes a habit from the database.
 func DeleteHabit(habitID string) error {
 	// Convert HabitID string to UUID
 	habitUUID, err := uuid.Parse(habitID)

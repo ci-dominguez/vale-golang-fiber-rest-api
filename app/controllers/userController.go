@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+// HandleUserCreated processes the "user.created" webhook event from Clerk.
+// It:
+// 1. Extracts user information (Clerk ID and Email) from the webhook payload
+// 2. Generates a new User struct with default values.
+// 3. Saves the new user to the db.
 func HandleUserCreated(data map[string]interface{}) {
 	userData, ok := data["data"].(map[string]interface{})
 	if !ok {

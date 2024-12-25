@@ -9,6 +9,7 @@ import (
 	"os"
 )
 
+// HandleClerkWebhooks processes incoming webhooks & events from Clerk.
 func HandleClerkWebhooks(c *fiber.Ctx) error {
 	webhookSecret := os.Getenv("CLERK_USER_WEBHOOK_SECRET")
 	if webhookSecret == "" {
@@ -18,6 +19,7 @@ func HandleClerkWebhooks(c *fiber.Ctx) error {
 		})
 	}
 
+	// Get request body and headers
 	payload := c.Body()
 	headers := c.GetReqHeaders()
 
@@ -41,7 +43,7 @@ func HandleClerkWebhooks(c *fiber.Ctx) error {
 		})
 	}
 
-	// Parse payload
+	// Parse payload into a map
 	err = json.Unmarshal(payload, &eventPayload)
 	if err != nil {
 		log.Println("Error parsing webhook payload:", err)
@@ -51,6 +53,7 @@ func HandleClerkWebhooks(c *fiber.Ctx) error {
 		})
 	}
 
+	// Extract event type from payload
 	eventType, ok := eventPayload["type"].(string)
 	if !ok {
 		log.Println("Missing or invalid type in payload")
@@ -60,6 +63,7 @@ func HandleClerkWebhooks(c *fiber.Ctx) error {
 		})
 	}
 
+	// Handle events
 	switch eventType {
 	case "user.created":
 		HandleUserCreated(eventPayload)

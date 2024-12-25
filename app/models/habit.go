@@ -7,6 +7,7 @@ import (
 )
 
 // Habit represents a habit entity.
+// A habit belongs to a user.
 type Habit struct {
 	HabitID     uuid.UUID `gorm:"type:uuid;default:uuid_generate_v4();primaryKey" json:"habit_id"`
 	UserID      uuid.UUID `gorm:"type:uuid;not null" json:"user_id"`

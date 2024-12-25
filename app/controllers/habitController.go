@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+// CreateHabit handles the creation of a new Habit.
+// It:
+// 1. Parses request body into a Habit struct
+// 2. Retrieves the authenticated user's UUID from the request context.
+// 3. Creates a new Habit in the db with a month's worth of HabitRecords.
 func CreateHabit(c *fiber.Ctx) error {
 	var habit models.Habit
 
@@ -63,6 +68,10 @@ func CreateHabit(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusCreated).JSON(habit)
 }
 
+// GetHabits retrieves all habits associated with the authenticated user.
+// It:
+// 1. Retrieves the user's UUID from the request context.
+// 2. Fetches all habits belonging to that user from the db.
 func GetHabits(c *fiber.Ctx) error {
 	// Get users db id
 	userUUID, err := utils.GetUserUUID(c)
@@ -83,6 +92,12 @@ func GetHabits(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(habits)
 }
 
+// DeleteHabit deletes a specific Habit and its associated HabitRecords.
+// It:
+// 1. Retrieves the user's UUID from the request context.
+// 2. Validates that the required query param is provided.
+// 3. Verifies that the authenticated user owns the specified Habit.
+// 4. Deletes all associated HabitRecords before deleting the Habit itself.
 func DeleteHabit(c *fiber.Ctx) error {
 	// Get users db id
 	userUUID, err := utils.GetUserUUID(c)
@@ -119,14 +134,14 @@ func DeleteHabit(c *fiber.Ctx) error {
 
 	println("User is authorized to modify habit")
 
-	//Delete all habitRecords for habit
+	// Delete all habitRecords for habit
 	if err := queries.DeleteHabitRecords(habitID); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to delete habit records",
 		})
 	}
 
-	//Delete habit
+	// Delete habit
 	if err := queries.DeleteHabit(habitID); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to delete habit",

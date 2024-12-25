@@ -9,12 +9,13 @@ import (
 	"time"
 )
 
-// CreateHabitRecords inserts new habit records into db
+// CreateHabitRecords inserts multiple HabitRecords into the db.
 func CreateHabitRecords(records []models.HabitRecord) error {
 	result := database.DB.Create(&records)
 	return result.Error
 }
 
+// GetHabitRecords retrieves HabitRecords for specific Habits within a date range.
 func GetHabitRecords(habitIDs []string, startDate time.Time, endDate time.Time) ([]models.HabitRecord, error) {
 	var habitRecords []models.HabitRecord
 
@@ -23,6 +24,7 @@ func GetHabitRecords(habitIDs []string, startDate time.Time, endDate time.Time) 
 	return habitRecords, err
 }
 
+// DeleteHabitRecords removes all HabitRecords associated with a specific Habit ID
 func DeleteHabitRecords(habitID string) error {
 	// Convert habitID string to UUID
 	habitUUID, err := uuid.Parse(habitID)
@@ -36,6 +38,9 @@ func DeleteHabitRecords(habitID string) error {
 	return result.Error
 }
 
+// UpdateHabitRecord toggles or creates a HabitRecord for a specific habit and date.
+// If no HabitRecord exists, it creates one with IsCompleted set to true,
+// If a HabitRecord exists, it toggles it's IsCompleted field
 func UpdateHabitRecord(habitID string, recordDate time.Time) (*models.HabitRecord, error) {
 	var foundRecord models.HabitRecord
 

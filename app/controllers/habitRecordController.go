@@ -8,6 +8,12 @@ import (
 	"time"
 )
 
+// GetHabitRecords retrieves HabitRecords for specific Habits within a date range.
+// It:
+// 1. Validates required query parameters.
+// 2. Parses and validates the date range.
+// 3. Verifies that the user authenticated user owns all the requested habits.
+// 4. Fetches HabitRecords from the db.
 func GetHabitRecords(c *fiber.Ctx) error {
 	// Get users db id
 	userUUID, err := utils.GetUserUUID(c)
@@ -91,6 +97,12 @@ func GetHabitRecords(c *fiber.Ctx) error {
 	return c.JSON(habitRecords)
 }
 
+// UpdateHabitRecord toggles or creates a HabitRecord for a specific habit and date.
+// It:
+// 1. Validates required query parameters.
+// 2. Parses the record date.
+// 3. Verifies that the authenticated user owns the specified Habit.
+// 4. Toggles or creates a HabitRecord in the db.
 func UpdateHabitRecord(c *fiber.Ctx) error {
 
 	// Get users db id
