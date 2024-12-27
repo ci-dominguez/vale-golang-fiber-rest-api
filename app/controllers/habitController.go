@@ -152,3 +152,54 @@ func DeleteHabit(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(habitID)
 }
+
+// UpdateHabit updates specific details of a Habit.
+func UpdateHabit(c *fiber.Ctx) error {
+	// Get users db id
+	userUUID, err := utils.GetUserUUID(c)
+	if err != nil {
+		return c.Status(err.(*fiber.Error).Code).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Parse request body into a map
+	var updates map[string]interface{}
+	if err := c.BodyParser(&updates); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid request body",
+		})
+	}
+
+	// Validate habitID from URL params
+	habitID := c.Query("habit")
+	if habitID == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Missing required query param: habit",
+		})
+	}
+
+	// Verify habit belongs to user making the request
+	isAuthorized, err := queries.VerifyHabitOwnership(habitID, userUUID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to verify habit ownership",
+		})
+	}
+	if !isAuthorized {
+		return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+			"error": "You are not authorized to perform this action",
+		})
+	}
+
+	println("User is authorized to modify habit")
+
+	// Update habit
+	if err := queries.UpdateHabit(habitID, updates); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Failed to update habit",
+		})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{})
+}

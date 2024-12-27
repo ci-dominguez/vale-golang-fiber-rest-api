@@ -21,7 +21,7 @@ func GetHabitsByUserID(userID uuid.UUID) ([]models.Habit, error) {
 	return habits, result.Error
 }
 
-// DeleteHabit removes a habit from the database.
+// DeleteHabit removes a habit from the db.
 func DeleteHabit(habitID string) error {
 	// Convert HabitID string to UUID
 	habitUUID, err := uuid.Parse(habitID)
@@ -35,6 +35,21 @@ func DeleteHabit(habitID string) error {
 	return result.Error
 }
 
+// UpdateHabit updates a specific habit's name, description, and / or goal.
+func UpdateHabit(habitID string, updates map[string]interface{}) error {
+	// Convert habitID string to UUID
+	habitUUID, err := uuid.Parse(habitID)
+	if err != nil {
+		return err
+	}
+
+	// Update habit
+	result := database.DB.Where("habit_id = ?", habitUUID).Updates(updates)
+
+	return result.Error
+}
+
+// VerifyHabitOwnership checks that the user sending a request is the owner of the habit in the db.
 func VerifyHabitOwnership(habitID string, userUUID uuid.UUID) (bool, error) {
 	// Convert habitID string to UUID
 	habitUUID, err := uuid.Parse(habitID)
