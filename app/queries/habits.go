@@ -43,8 +43,17 @@ func UpdateHabit(habitID string, updates map[string]interface{}) error {
 		return err
 	}
 
+	// Validate and sanitize updates map
+	validKeys := map[string]bool{"name": true, "description": true, "goal": true}
+	sanitizedUpdates := make(map[string]interface{})
+	for k, v := range updates {
+		if validKeys[k] && v != nil && v != "" {
+			sanitizedUpdates[k] = v
+		}
+	}
+
 	// Update habit
-	result := database.DB.Where("habit_id = ?", habitUUID).Updates(updates)
+	result := database.DB.Model(&models.Habit{}).Where("habit_id = ?", habitUUID).Updates(sanitizedUpdates)
 
 	return result.Error
 }

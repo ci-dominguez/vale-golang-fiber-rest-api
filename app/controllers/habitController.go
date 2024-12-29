@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/ci-dominguez/vale-backend/app/models"
 	"github.com/ci-dominguez/vale-backend/app/queries"
 	"github.com/ci-dominguez/vale-backend/app/utils"
@@ -171,6 +172,8 @@ func UpdateHabit(c *fiber.Ctx) error {
 		})
 	}
 
+	fmt.Printf("Parsed updates: %+v\n", updates)
+
 	// Validate habitID from URL params
 	habitID := c.Query("habit")
 	if habitID == "" {
@@ -178,6 +181,8 @@ func UpdateHabit(c *fiber.Ctx) error {
 			"error": "Missing required query param: habit",
 		})
 	}
+
+	println("Parsed Habit ID:", habitID)
 
 	// Verify habit belongs to user making the request
 	isAuthorized, err := queries.VerifyHabitOwnership(habitID, userUUID)
