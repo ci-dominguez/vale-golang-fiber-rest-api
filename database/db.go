@@ -31,7 +31,7 @@ func InitDB() {
 // MigrateDB performs schema migrations for the app's db.
 // Logs error if migration fails
 func MigrateDB() {
-	err := DB.AutoMigrate(&models.Habit{}, &models.HabitRecord{}, &models.User{})
+	err := DB.AutoMigrate(&models.User{}, &models.Habit{}, &models.HabitRecord{})
 
 	if err != nil {
 		log.Fatal("Failed to migrate database:", err)
