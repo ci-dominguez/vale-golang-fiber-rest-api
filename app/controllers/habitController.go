@@ -43,8 +43,26 @@ func CreateHabit(c *fiber.Ctx) error {
 	habit.CreatedAt = time.Now()
 
 	// Randomly assign a color to the habit
-	colors := [25]string{"purple", "green", "red", "orange", "yellow", "light-yellow", "lime", "light-lime", "mint", "light-mint", "teal", "light-teal", "cyan",
-		"light-cyan", "sky", "light-sky", "blue", "light-blue", "indigo", "light-indigo", "violet", "light-violet", "pink", "light-pink", "rose"}
+	colors := [...]string{
+		"habit-purple",
+		"habit-green",
+		"habit-red",
+		"habit-orange",
+		"habit-yellow",
+		"habit-light-yellow",
+		"habit-lime",
+		"habit-light-lime",
+		"habit-mint",
+		"habit-light-mint",
+		"habit-teal",
+		"habit-light-cyan",
+		"habit-indigo",
+		"habit-light-indigo",
+		"habit-violet",
+		"habit-pink",
+		"habit-light-pink",
+		"habit-rose",
+	}
 
 	randIndex := rand.Intn(len(colors))
 
