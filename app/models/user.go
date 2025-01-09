@@ -15,5 +15,6 @@ type User struct {
 	ClerkID   string    `gorm:"type:VARCHAR(255);not null" json:"clerk_id" db:"clerk_id"`
 	Name      string    `gorm:"type:VARCHAR(255);not null" json:"name" db:"name"`
 	Email     string    `gorm:"type:VARCHAR(255);unique;not null" json:"email" db:"email"`
+	IsPremium bool      `gorm:"type:boolean;not null;default:false" json:"is_premium" db:"is_premium"`
 	CreatedAt time.Time `gorm:"autoCreateTime" json:"created_at" db:"created_at"`
 }
