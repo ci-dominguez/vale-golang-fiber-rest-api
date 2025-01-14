@@ -51,7 +51,8 @@ func AuthMiddleware(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"error": "User not found"})
 	}
 
-	// Store user db id as string
+	// Store user db id and premium status in fiber context
 	c.Locals("userId", user.UserID.String())
+	c.Locals("userStatus", user.IsPremium)
 	return c.Next()
 }
