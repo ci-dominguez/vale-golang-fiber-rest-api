@@ -19,6 +19,39 @@ import (
 func CreateHabit(c *fiber.Ctx) error {
 	var habit models.Habit
 
+	// Get users db id
+	userUUID, err := utils.GetUserUUID(c)
+	if err != nil {
+		return c.Status(err.(*fiber.Error).Code).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// Get users premium status.
+	isUserPremium, err := utils.GetUserStatus(c)
+	if err != nil {
+		return c.Status(err.(*fiber.Error).Code).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
+	// If user is not premium, check habit limits.
+	if !isUserPremium {
+
+		habitCount, err := queries.GetUserHabitCount(userUUID)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Failed to get habit count",
+			})
+		}
+
+		if habitCount >= 3 {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error": "User has reached free tier limits.",
+			})
+		}
+	}
+
 	// Parse JSON into habit struct
 	if err := c.BodyParser(&habit); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
@@ -29,14 +62,6 @@ func CreateHabit(c *fiber.Ctx) error {
 	println("Parsed Habit Name:", habit.Name)
 	println("Parsed Habit Description:", habit.Description)
 
-	// Get users db id
-	userUUID, err := utils.GetUserUUID(c)
-	if err != nil {
-		return c.Status(err.(*fiber.Error).Code).JSON(fiber.Map{
-			"error": err.Error(),
-		})
-	}
-
 	// Assign non-user generated values to habit
 	habit.UserID = userUUID
 	habit.HabitID = uuid.New()
@@ -44,24 +69,24 @@ func CreateHabit(c *fiber.Ctx) error {
 
 	// Randomly assign a color to the habit
 	colors := [...]string{
-		"habit-purple",
-		"habit-green",
-		"habit-red",
-		"habit-orange",
-		"habit-yellow",
-		"habit-light-yellow",
-		"habit-lime",
-		"habit-light-lime",
-		"habit-mint",
-		"habit-light-mint",
-		"habit-teal",
-		"habit-light-cyan",
-		"habit-indigo",
-		"habit-light-indigo",
-		"habit-violet",
-		"habit-pink",
-		"habit-light-pink",
-		"habit-rose",
+		"purple",
+		"green",
+		"red",
+		"orange",
+		"yellow",
+		"light-yellow",
+		"lime",
+		"light-lime",
+		"mint",
+		"light-mint",
+		"teal",
+		"light-cyan",
+		"indigo",
+		"light-indigo",
+		"violet",
+		"pink",
+		"light-pink",
+		"rose",
 	}
 
 	randIndex := rand.Intn(len(colors))

@@ -21,6 +21,14 @@ func GetHabitsByUserID(userID uuid.UUID) ([]models.Habit, error) {
 	return habits, result.Error
 }
 
+func GetUserHabitCount(userID uuid.UUID) (int64, error) {
+	var count int64
+
+	result := database.DB.Model(&models.Habit{}).Where("user_id = ?", userID).Count(&count)
+
+	return count, result.Error
+}
+
 // DeleteHabit removes a habit from the db.
 func DeleteHabit(habitID string) error {
 	// Convert HabitID string to UUID

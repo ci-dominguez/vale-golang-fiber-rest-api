@@ -36,3 +36,18 @@ func GetUserUUID(c *fiber.Ctx) (uuid.UUID, error) {
 
 	return userUUID, nil
 }
+
+// GetUserStatus retrieves the boolean value of the userStatus from the Fiber context.
+// Expects 'userStatus' to be stored in the context
+// Returns:
+// - The user status boolean value
+// - An error if the user status value is not found.
+func GetUserStatus(c *fiber.Ctx) (bool, error) {
+	// Get user premium status from context
+	userStatusInterface := c.Locals("userStatus")
+	if userStatusInterface == nil {
+		return false, fiber.NewError(fiber.StatusUnauthorized, "User status not found in context")
+	}
+
+	return userStatusInterface.(bool), nil
+}
