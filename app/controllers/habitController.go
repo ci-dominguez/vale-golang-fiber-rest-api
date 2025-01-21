@@ -254,11 +254,12 @@ func UpdateHabit(c *fiber.Ctx) error {
 	println("User is authorized to modify habit")
 
 	// Update habit
-	if err := queries.UpdateHabit(habitID, updates); err != nil {
+	habit, err := queries.UpdateHabit(habitID, updates)
+	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Failed to update habit",
 		})
 	}
 
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{})
+	return c.Status(fiber.StatusOK).JSON(habit)
 }

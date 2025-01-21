@@ -44,11 +44,13 @@ func DeleteHabit(habitID string) error {
 }
 
 // UpdateHabit updates a specific habit's name, description, and / or goal.
-func UpdateHabit(habitID string, updates map[string]interface{}) error {
+func UpdateHabit(habitID string, updates map[string]interface{}) (models.Habit, error) {
+	var habit models.Habit
+
 	// Convert habitID string to UUID
 	habitUUID, err := uuid.Parse(habitID)
 	if err != nil {
-		return err
+		return habit, err
 	}
 
 	// Validate and sanitize updates map
@@ -61,9 +63,16 @@ func UpdateHabit(habitID string, updates map[string]interface{}) error {
 	}
 
 	// Update habit
-	result := database.DB.Model(&models.Habit{}).Where("habit_id = ?", habitUUID).Updates(sanitizedUpdates)
+	if err := database.DB.Model(&models.Habit{}).Where("habit_id = ?", habitUUID).Updates(sanitizedUpdates).Error; err != nil {
+		return habit, err
+	}
 
-	return result.Error
+	// Fetch and return new habit details5
+	if err := database.DB.Where("habit_id = ?", habitUUID).First(&habit).Error; err != nil {
+		return habit, err
+	}
+
+	return habit, nil
 }
 
 // VerifyHabitOwnership checks that the user sending a request is the owner of the habit in the db.
