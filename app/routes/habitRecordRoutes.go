@@ -9,10 +9,10 @@ import (
 // HabitRecordRoutes registers routes for managing habitRecords.
 // Routes are protected by AuthMiddleware.
 func HabitRecordRoutes(app *fiber.App) {
-	api := app.Group("/api")
+	api := app.Group("/api/habit-records")
 
-	api.Use(middleware.AuthMiddleware)
+	api.Use(middleware.AuthMiddleware())
 
-	api.Get("/habit-records", controllers.GetHabitRecords)
-	api.Patch("/habit-records", controllers.UpdateHabitRecord)
+	api.Get("/", controllers.GetHabitRecords)
+	api.Patch("/", controllers.UpdateHabitRecord)
 }

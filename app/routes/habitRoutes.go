@@ -9,12 +9,12 @@ import (
 // HabitRoutes registers routes for habit management.
 // Routes are protected by AuthMiddleware.
 func HabitRoutes(app *fiber.App) {
-	api := app.Group("/api")
+	api := app.Group("/api/habits")
 
-	api.Use(middleware.AuthMiddleware)
+	api.Use(middleware.AuthMiddleware())
 
-	api.Post("/habits", controllers.CreateHabit)
-	api.Get("/habits", controllers.GetHabits)
-	api.Delete("/habits", controllers.DeleteHabit)
-	api.Patch("/habits", controllers.UpdateHabit)
+	api.Post("/", controllers.CreateHabit)
+	api.Get("/", controllers.GetHabits)
+	api.Delete("/", controllers.DeleteHabit)
+	api.Patch("/", controllers.UpdateHabit)
 }

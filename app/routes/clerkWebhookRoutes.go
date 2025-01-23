@@ -7,6 +7,6 @@ import (
 
 // ClerkWebhookRoutes registers routes to handle incoming webhook events from Clerk.
 func ClerkWebhookRoutes(app *fiber.App) {
-	api := app.Group("/api/webhooks")
-	api.Post("/clerk", controllers.HandleClerkWebhooks)
+	api := app.Group("/api/webhooks/clerk")
+	api.Post("/", controllers.HandleClerkWebhooks)
 }
