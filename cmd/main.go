@@ -38,6 +38,11 @@ func main() {
 	routes.HabitRoutes(app)
 	routes.HabitRecordRoutes(app)
 	routes.ClerkWebhookRoutes(app)
+	routes.StripeWebhookRoutes(app)
+
+	app.Get("/debug/routes", func(c *fiber.Ctx) error {
+		return c.JSON(app.Stack())
+	})
 
 	log.Fatal(app.Listen(":4000"))
 }
