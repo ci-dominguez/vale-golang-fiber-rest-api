@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -67,33 +68,11 @@ func CreateHabit(c *fiber.Ctx) error {
 	habit.HabitID = uuid.New()
 	habit.CreatedAt = time.Now()
 
-	// Randomly assign a color to the habit
-	colors := [...]string{
-		"purple",
-		"green",
-		"red",
-		"orange",
-		"yellow",
-		"light-yellow",
-		"lime",
-		"light-lime",
-		"mint",
-		"light-mint",
-		"teal",
-		"light-cyan",
-		"indigo",
-		"light-indigo",
-		"violet",
-		"pink",
-		"light-pink",
-		"rose",
-	}
+	// Randomly assign a color number to the habit
 
-	randIndex := rand.Intn(len(colors))
+	randNum := rand.Intn(12) + 1
 
-	randColor := colors[randIndex]
-
-	habit.Color = randColor
+	habit.Color = strconv.Itoa(randNum)
 
 	if err := queries.CreateHabit(&habit); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
