@@ -1,5 +1,5 @@
 # Vale: Modern Habit Tracking Platform
-Link to frontend [here](https://github.com/ci-dominguez/vale-react-typescript-frontend)]
+Link to frontend [here](https://github.com/ci-dominguez/vale-react-typescript-frontend)
 
 ## 🛠️ Built With
 
